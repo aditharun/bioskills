@@ -1,0 +1,15 @@
+{
+  "_comment": "Merge this fragment into your ~/.claude/settings.json under the top-level `hooks` key. The install.sh script will do this automatically.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "P=$(jq -r '.prompt // empty'); ID=$(printf '%s' \"$P\" | sed -nE 's/^[[:space:]]*([Nn][Cc][Tt])?([0-9]{8})[[:space:]]*$/\\2/p'); if [ -n \"$ID\" ]; then open \"https://clinicaltrials.gov/study/NCT$ID\"; printf '{\"decision\":\"block\",\"systemMessage\":\"Opened https://clinicaltrials.gov/study/NCT%s in browser\"}' \"$ID\"; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+.DS_Store
+*.env
+*.env.*
+.envrc
+*.key
+*.pem
+*.secret
+secrets/
+.idea/
+.vscode/
+*.swp
+*.swo
