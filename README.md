@@ -21,10 +21,17 @@ Each of the above opens `https://clinicaltrials.gov/study/NCT04267848` in your d
 **2. Search by trial name and/or drug** (handled by the skill — Claude calls the [ClinicalTrials.gov v2 API](https://clinicaltrials.gov/data-api/api) and opens the top match, or asks you to pick if results are ambiguous):
 
 ```
-SUCCESSOR-1 mezigdomide
-KEYNOTE-189
-pembrolizumab NSCLC first line
+RASolute302 daraxonrasib
+pembrolizumab KEYNOTE-859
 ```
+
+If for whatever reason the above does not work, simply prepend "nct". I find that if you are pasting an NCT ID then there is no need to prepend "nct" but if you are using the search it is best to type nct before hand. 
+
+```
+nct RASolute302 daraxonrasib
+nct pembrolizumab KEYNOTE-859
+``` 
+
 
 ## Install
 
@@ -36,12 +43,6 @@ cd ~/Documents/GitHub/bioskills
 ./install.sh
 ```
 
-The installer:
-
-1. Symlinks `~/.claude/skills/nct` → `skills/nct/` in this repo (so edits in the repo are live).
-2. Merges the `UserPromptSubmit` hook from `hooks/nct-hook-snippet.json` into `~/.claude/settings.json`. Existing settings are preserved.
-
-Open `/hooks` in Claude Code (or restart) once after installing to activate the hook.
 
 ## Uninstall
 
@@ -51,8 +52,4 @@ rm ~/.claude/skills/nct
 # (look for the command containing "clinicaltrials.gov/study")
 ```
 
-## Security notes
 
-- The CT.gov v2 API is fully public — no API key, no auth, no credentials anywhere in this repo.
-- The hook only triggers on prompts matching `^\s*(NCT)?\d{8}\s*$` — it does not read or transmit any other prompts.
-- Your `~/.claude/settings.json` is never tracked by this repo (only the hook fragment is).

@@ -1,11 +1,16 @@
 ---
 name: nct
 description: |
-  Open a ClinicalTrials.gov study page in the default browser. Two modes:
+  Open a ClinicalTrials.gov study page in the default browser. Three triggers:
   (1) AUTO-TRIGGER on bare ID: if the user's entire message matches
   `^\s*(NCT)?\d{8}\s*$` (e.g. `NCT04267848`, `nct04267848`, or just `04267848`),
-  invoke immediately without asking. (2) NAME LOOKUP: if the user gives a trial
-  name and/or drug (e.g. `SUCCESSOR-1 mezigdomide`, `KEYNOTE-189`,
+  invoke immediately without asking. (2) EXPLICIT `nct` PREFIX: if the user's
+  message starts with `nct ` (case-insensitive) followed by any free-form text
+  (e.g. `nct RASolute303 daraxonrasib`, `nct KEYNOTE-189`), always invoke this
+  skill — strip the `nct ` prefix and use the remainder as the API query. This
+  is the escape hatch for trial code names or drug names Claude wouldn't
+  otherwise recognize as a trial reference. (3) NAME LOOKUP: if the user gives
+  a trial name and/or drug (e.g. `SUCCESSOR-1 mezigdomide`, `KEYNOTE-189`,
   `pembrolizumab NSCLC first line`), query the ClinicalTrials.gov v2 API to
   resolve the NCT ID, then open it. Also use when the user pastes an NCT ID in
   a longer message and asks to view, open, or look up the trial.
@@ -26,7 +31,9 @@ open "https://clinicaltrials.gov/study/NCT<8digits>"
 
 ## Mode B — trial name and/or drug name
 
-The user gives free-form text like `SUCCESSOR-1 mezigdomide`, `KEYNOTE-189`, or `pembrolizumab pancreatic cancer`. Steps:
+The user gives free-form text like `SUCCESSOR-1 mezigdomide`, `KEYNOTE-189`, or `pembrolizumab pancreatic cancer`. This also covers the explicit `nct <query>` prefix form (e.g. `nct RASolute303 daraxonrasib`) — strip the leading `nct ` and treat the remainder as the query. The prefix form is the escape hatch for obscure trial code names or drug names where Claude wouldn't otherwise recognize the input as a trial reference; when present, always invoke this skill.
+
+Steps:
 
 1. **Query the API.** ClinicalTrials.gov v2 is public, no auth required. Build the query:
 
