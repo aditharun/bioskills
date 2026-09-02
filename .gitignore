@@ -10,3 +10,6 @@ secrets/
 .vscode/
 *.swp
 *.swo
+cv-resume/
+.gstack/
+skills/find-gigs/

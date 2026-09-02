@@ -11,27 +11,34 @@ SETTINGS="$CLAUDE_DIR/settings.json"
 
 mkdir -p "$SKILLS_DIR"
 
-# --- 1. Symlink the nct skill --------------------------------------------------
-SKILL_LINK="$SKILLS_DIR/nct"
-SKILL_TARGET="$REPO_DIR/skills/nct"
+# --- 1. Symlink skills ---------------------------------------------------------
+link_skill() {
+  local name="$1"
+  local link="$SKILLS_DIR/$name"
+  local target="$REPO_DIR/skills/$name"
 
-if [ -L "$SKILL_LINK" ]; then
-  CURRENT=$(readlink "$SKILL_LINK")
-  if [ "$CURRENT" = "$SKILL_TARGET" ]; then
-    echo "✓ nct skill already linked to this repo"
-  else
-    echo "✗ $SKILL_LINK is a symlink pointing elsewhere ($CURRENT)."
-    echo "  Remove it manually if you want to relink to this repo."
+  if [ -L "$link" ]; then
+    local current
+    current=$(readlink "$link")
+    if [ "$current" = "$target" ]; then
+      echo "✓ $name skill already linked to this repo"
+    else
+      echo "✗ $link is a symlink pointing elsewhere ($current)."
+      echo "  Remove it manually if you want to relink to this repo."
+      exit 1
+    fi
+  elif [ -e "$link" ]; then
+    echo "✗ $link already exists and is not a symlink."
+    echo "  Back it up and remove it, then re-run this script."
     exit 1
+  else
+    ln -s "$target" "$link"
+    echo "✓ linked $link → $target"
   fi
-elif [ -e "$SKILL_LINK" ]; then
-  echo "✗ $SKILL_LINK already exists and is not a symlink."
-  echo "  Back it up and remove it, then re-run this script."
-  exit 1
-else
-  ln -s "$SKILL_TARGET" "$SKILL_LINK"
-  echo "✓ linked $SKILL_LINK → $SKILL_TARGET"
-fi
+}
+
+link_skill nct
+link_skill unroll-webpage
 
 # --- 2. Merge the hook into settings.json -------------------------------------
 HOOK_SNIPPET="$REPO_DIR/hooks/nct-hook-snippet.json"
